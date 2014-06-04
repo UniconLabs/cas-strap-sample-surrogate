@@ -4,6 +4,7 @@ apply from: "http://dl.bintray.com/scalding/generic/waroverlay.gradle"
 apply from: "gradle/aggregate.gradle"
 
 repositories {
+    mavenLocal()
     mavenCentral artifactUrls: ["http://developer.jasig.org/repo/content/groups/m2-legacy/", "http://central.maven.org/maven2/"]
     maven { url "http://oss.sonatype.org/content/repositories/releases/" }
     maven { url "http://dl.bintray.com/uniconiam/maven" }
