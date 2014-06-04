@@ -1,22 +1,28 @@
 apply plugin: "base"
+apply plugin: "groovy"
 apply from: "http://dl.bintray.com/scalding/generic/waroverlay.gradle"
 apply from: "gradle/aggregate.gradle"
 
 repositories {
     mavenCentral artifactUrls: ["http://developer.jasig.org/repo/content/groups/m2-legacy/", "http://central.maven.org/maven2/"]
     maven { url "http://oss.sonatype.org/content/repositories/releases/" }
+    maven { url "http://dl.bintray.com/uniconiam/maven" }
 }
 
 dependencies {
+    compile "org.codehaus.groovy:groovy-all:${project."groovy.version"}"
     runtime("org.jasig.cas:cas-server-webapp:${project."cas.version"}@war") {
         transitive = true
     }
+
+    compile "org.jasig.cas:cas-server-core:${project."cas.version"}"
 
     ["core", "logging-juli", "jasper"].each {
         tomcat("org.apache.tomcat.embed:tomcat-embed-${it}:${project."tomcat.version"}") {
             exclude group: "org.eclipse.jdt.core.compiler", module: "ecj"
         }
     }
+    compile "org.apereo.cas:cas-surrogate-principal:1.0-T1"
 }
 
 war {
