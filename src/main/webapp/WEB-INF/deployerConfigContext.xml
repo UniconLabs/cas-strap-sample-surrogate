@@ -120,6 +120,8 @@
 
     <bean id="surrogateUsernamePasswordService" class="net.unicon.cas.authentication.service.SimpleSurrogateUsernamePasswordService" />
 
+    <bean id="loadSurrogateAction" class="edu.berkeley.cas.web.flow.LoadSurrogateAction" p:surrogateUsernamePasswordService-ref="surrogateUsernamePasswordService" />
+
     <util:list id="authenticationHandlers">
         <bean class="org.jasig.cas.authentication.handler.support.HttpBasedServiceCredentialsAuthenticationHandler"
               p:httpClient-ref="httpClient" />

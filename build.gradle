@@ -23,7 +23,7 @@ dependencies {
             exclude group: "org.eclipse.jdt.core.compiler", module: "ecj"
         }
     }
-    compile "org.apereo.cas:cas-surrogate-principal:1.0-T1"
+    compile "org.apereo.cas:cas-surrogate-principal:1.0-M1-SNAPSHOT"
 }
 
 war {
