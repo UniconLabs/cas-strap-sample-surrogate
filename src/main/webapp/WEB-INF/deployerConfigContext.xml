@@ -23,8 +23,8 @@
 	| deployerConfigContext.xml centralizes into one file some of the declarative configuration that
 	| all CAS deployers will need to modify.
 	|
-	| This file declares some of the Spring-managed JavaBeans that make up a CAS deployment.  
-	| The beans declared in this file are instantiated at context initialization time by the Spring 
+	| This file declares some of the Spring-managed JavaBeans that make up a CAS deployment.
+	| The beans declared in this file are instantiated at context initialization time by the Spring
 	| ContextLoaderListener declared in web.xml.  It finds this file because this
 	| file is among those declared in the context parameter "contextConfigLocation".
 	|
@@ -44,11 +44,11 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
-    <context:component-scan base-package="net.unicon.cas.controller" />
+    <context:component-scan base-package="net.unicon.cas.controllers" />
 
 	<!--
 		| This bean declares our AuthenticationManager.  The CentralAuthenticationService service bean
-		| declared in applicationContext.xml picks up this AuthenticationManager by reference to its id, 
+		| declared in applicationContext.xml picks up this AuthenticationManager by reference to its id,
 		| "authenticationManager".  Most deployers will be able to use the default AuthenticationManager
 		| implementation and so do not need to change the class of this bean.  We include the whole
 		| AuthenticationManager here in the userConfigContext.xml so that you can see the things you will
@@ -56,7 +56,7 @@
 		+-->
 	<bean id="authenticationManager"
 		class="org.jasig.cas.authentication.AuthenticationManagerImpl">
-		
+
 		<!-- Uncomment the metadata populator to allow clearpass to capture and cache the password
 		     This switch effectively will turn on clearpass.
 		<property name="authenticationMetaDataPopulators">
@@ -67,10 +67,10 @@
 		   </list>
 		</property>
 		 -->
-		
+
 		<!--
 			| This is the List of CredentialToPrincipalResolvers that identify what Principal is trying to authenticate.
-			| The AuthenticationManagerImpl considers them in order, finding a CredentialToPrincipalResolver which 
+			| The AuthenticationManagerImpl considers them in order, finding a CredentialToPrincipalResolver which
 			| supports the presented credentials.
 			|
 			| AuthenticationManagerImpl uses these resolvers for two purposes.  First, it uses them to identify the Principal
@@ -79,16 +79,16 @@
 			| DefaultCredentialsToPrincipalResolver with a CredentialsToPrincipalResolver that supports the credentials you are
 			| using.
 			|
-			| Second, AuthenticationManagerImpl uses these resolvers to identify a service requesting a proxy granting ticket. 
-			| In the default configuration, it is the HttpBasedServiceCredentialsToPrincipalResolver that serves this purpose. 
+			| Second, AuthenticationManagerImpl uses these resolvers to identify a service requesting a proxy granting ticket.
+			| In the default configuration, it is the HttpBasedServiceCredentialsToPrincipalResolver that serves this purpose.
 			| You will need to change this list if you are identifying services by something more or other than their callback URL.
 			+-->
 		<property name="credentialsToPrincipalResolvers">
 			<list>
 				<!--
-					| UsernamePasswordCredentialsToPrincipalResolver supports the UsernamePasswordCredentials that we use for /login 
+					| UsernamePasswordCredentialsToPrincipalResolver supports the UsernamePasswordCredentials that we use for /login
 					| by default and produces SimplePrincipal instances conveying the username from the credentials.
-					| 
+					|
 					| If you've changed your LoginFormAction to use credentials other than UsernamePasswordCredentials then you will also
 					| need to change this bean declaration (or add additional declarations) to declare a CredentialsToPrincipalResolver that supports the
 					| Credentials you are using.
@@ -110,7 +110,7 @@
 		</property>
 
 		<!--
-			| Whereas CredentialsToPrincipalResolvers identify who it is some Credentials might authenticate, 
+			| Whereas CredentialsToPrincipalResolvers identify who it is some Credentials might authenticate,
 			| AuthenticationHandlers actually authenticate credentials.  Here we declare the AuthenticationHandlers that
 			| authenticate the Principals that the CredentialsToPrincipalResolvers identified.  CAS will try these handlers in turn
 			| until it finds one that both supports the Credentials presented and succeeds in authenticating.
@@ -118,7 +118,10 @@
 		<property name="authenticationHandlers" ref="authenticationHandlers" />
 	</bean>
 
-    <bean id="surrogateUsernamePasswordService" class="net.unicon.cas.authentication.service.SimpleSurrogateUsernamePasswordService" />
+    <bean id="surrogateUsernamePasswordService"
+          class="edu.berkeley.cas.authentication.service.LdapSurrogateUsernamePasswordService"
+          p:contextSource-ref="contextSource"
+            p:baseDN="${ldap.baseDN:dc=example,dc=com}"/>
 
     <bean id="loadSurrogateAction" class="edu.berkeley.cas.web.flow.LoadSurrogateAction" p:surrogateUsernamePasswordService-ref="surrogateUsernamePasswordService" />
 
@@ -135,7 +138,7 @@
 	<!--
 	This bean defines the security roles for the Services Management application.  Simple deployments can use the in-memory version.
 	More robust deployments will want to use another option, such as the Jdbc version.
-	
+
 	The name of this should remain "userDetailsService" in order for Spring Security to find it.
 	 -->
     <!-- <sec:user name="@@THIS SHOULD BE REPLACED@@" password="notused" authorities="ROLE_ADMIN" />-->
@@ -143,8 +146,8 @@
     <sec:user-service id="userDetailsService">
         <sec:user name="@@THIS SHOULD BE REPLACED@@" password="notused" authorities="ROLE_ADMIN" />
     </sec:user-service>
-	
-	<!-- 
+
+	<!--
 	Bean that defines the attributes that a service may return.  This example uses the Stub/Mock version.  A real implementation
 	may go against a database or LDAP server.  The id should remain "attributeRepository" though.
 	 -->
@@ -153,13 +156,13 @@
 		<property name="backingMap">
 			<map>
 				<entry key="uid" value="uid" />
-				<entry key="eduPersonAffiliation" value="eduPersonAffiliation" /> 
+				<entry key="eduPersonAffiliation" value="eduPersonAffiliation" />
 				<entry key="groupMembership" value="groupMembership" />
 			</map>
 		</property>
 	</bean>
-	
-	<!-- 
+
+	<!--
 	Sample, in-memory data store for the ServiceRegistry. A real implementation
 	would probably want to replace this with the JPA-backed ServiceRegistry DAO
 	The name of this bean should remain "serviceRegistryDao".
@@ -195,7 +198,7 @@
         </bean>
 
   <bean id="auditTrailManager" class="com.github.inspektr.audit.support.Slf4jLoggingAuditTrailManager" />
-  
+
   <bean id="healthCheckMonitor" class="org.jasig.cas.monitor.HealthCheckMonitor">
     <property name="monitors">
       <list>
@@ -215,4 +218,24 @@
       </list>
     </property>
   </bean>
+
+
+
+    <bean id="contextSource" class="org.springframework.ldap.core.support.LdapContextSource">
+        <property name="pooled" value="false"/>
+        <property name="urls">
+            <bean class="org.springframework.util.StringUtils" factory-method="commaDelimitedListToSet">
+                <constructor-arg type="java.lang.String" value="${ldap.server.urls}"/>
+            </bean>
+        </property>
+        <property name="userDn" value="${ldap.username}"/>
+        <property name="password" value="${ldap.password}"/>
+        <property name="baseEnvironmentProperties">
+            <map>
+                <entry key="com.sun.jndi.ldap.connect.timeout" value="${ldap.connect.timeout:5000}"/>
+                <entry key="com.sun.jndi.ldap.read.timeout" value="${ldap.read.timeout:5000}"/>
+                <entry key="java.naming.security.authentication" value="simple"/>
+            </map>
+        </property>
+    </bean>
 </beans>

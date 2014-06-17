@@ -16,16 +16,22 @@ dependencies {
         transitive = true
     }
 
-    compile "org.jasig.cas:cas-server-core:${project."cas.version"}"
+    ["core", "support-ldap"].each {
+        compile "org.jasig.cas:cas-server-${it}:${project."cas.version"}"
+    }
 
     ["core", "logging-juli", "jasper"].each {
         tomcat("org.apache.tomcat.embed:tomcat-embed-${it}:${project."tomcat.version"}") {
             exclude group: "org.eclipse.jdt.core.compiler", module: "ecj"
         }
     }
-    compile "org.apereo.cas:cas-surrogate-principal:1.0-M1-SNAPSHOT"
+    compile "org.apereo.cas:cas-surrogate-principal:1.0-T4-SNAPSHOT"
 }
 
 war {
     baseName "cas"
+}
+
+tasks.withType(Compile) {
+    options.compilerArgs << "-Xlint:unchecked"
 }
